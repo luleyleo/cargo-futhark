@@ -20,7 +20,7 @@ impl Display for Target {
 }
 
 impl Target {
-    pub fn struct_name(&self) -> &'static str {
+    pub(crate) fn struct_name(&self) -> &'static str {
         match self {
             Target::C => "C",
             Target::MultiCore => "MultiCore",
@@ -30,7 +30,7 @@ impl Target {
         }
     }
 
-    pub fn name(&self) -> &'static str {
+    pub(crate) fn name(&self) -> &'static str {
         match self {
             Target::C => "c",
             Target::MultiCore => "multicore",

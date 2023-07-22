@@ -5,7 +5,7 @@ use serde_json::{Map, Value};
 
 use crate::manifest::{ArrayType, EntryPoint, Manifest, Type, ValueType};
 
-pub fn load_from_json(manifest_file_content: &str) -> eyre::Result<Manifest> {
+pub fn load(manifest_file_content: &str) -> eyre::Result<Manifest> {
     let json: serde_json::Value =
         serde_json::from_str(&manifest_file_content).wrap_err("Failed to parse manifest JSON.")?;
 
