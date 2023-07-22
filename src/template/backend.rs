@@ -87,7 +87,7 @@ fn entry_point_fn(ep: &EntryPoint) -> TokenStream {
     });
 
     quote! {
-        unsafe fn #name (ctx: *mut types::futhark_context, #(#outputs),*, #(#inputs),*);
+        unsafe fn #name (ctx: *mut types::futhark_context, #(#outputs),*, #(#inputs),*) -> std::ffi::c_int;
     }
 }
 
@@ -227,12 +227,12 @@ fn entry_point_fn_impl(ep: &EntryPoint) -> TokenStream {
     });
 
     quote! {
-        unsafe fn #name (ctx: *mut types::futhark_context, #(#rust_outputs),*, #(#rust_inputs),*) {
+        unsafe fn #name (ctx: *mut types::futhark_context, #(#rust_outputs),*, #(#rust_inputs),*) -> std::ffi::c_int {
             sys::#name(
                 ctx as *mut sys::futhark_context,
                 #(#futhark_outputs),*,
                 #(#futhark_inputs),*
-            );
+            )
         }
     }
 }
