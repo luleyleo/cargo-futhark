@@ -6,13 +6,32 @@ use crate::{
     Target,
 };
 
+fn sys_template(backend: Target) -> TokenStream {
+    let target = backend.name();
+
+    quote! {
+        #![allow(
+            non_upper_case_globals,
+            non_camel_case_types,
+            non_snake_case,
+            improper_ctypes,
+            deref_nullptr,
+            dead_code,
+            clippy::approx_constant,
+            clippy::upper_case_acronyms
+        )]
+
+        include!(concat!(env!("OUT_DIR"), "/futhark/", #target, "/futhark_lib.rs"));
+    }
+}
+
 pub fn trait_template(manifest: &Manifest) -> TokenStream {
     let type_fns = manifest.types.iter().map(|typ| match typ {
         Type::Value(_) => quote!(),
-        Type::Array(array) => array_fns(array),
+        Type::Array(array) => trait_array_template(array),
     });
 
-    let entry_point_fns = manifest.entry_points.iter().map(entry_point_fn);
+    let entry_point_fns = manifest.entry_points.iter().map(trait_entry_point_template);
 
     quote! {
         pub trait Backend {
@@ -30,7 +49,7 @@ pub fn trait_template(manifest: &Manifest) -> TokenStream {
     }
 }
 
-fn array_fns(array: &ArrayType) -> TokenStream {
+fn trait_array_template(array: &ArrayType) -> TokenStream {
     let elem_name = format_ident!("{}", array.elements.rust_name());
     let type_name = format_ident!("{}", array.type_name());
 
@@ -53,7 +72,7 @@ fn array_fns(array: &ArrayType) -> TokenStream {
     }
 }
 
-fn entry_point_fn(ep: &EntryPoint) -> TokenStream {
+fn trait_entry_point_template(ep: &EntryPoint) -> TokenStream {
     let name = format_ident!("{}", ep.fn_name());
 
     let inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
@@ -91,39 +110,20 @@ fn entry_point_fn(ep: &EntryPoint) -> TokenStream {
     }
 }
 
-fn sys_include(backend: Target) -> TokenStream {
-    let target = backend.name();
-
-    quote! {
-        #![allow(
-            non_upper_case_globals,
-            non_camel_case_types,
-            non_snake_case,
-            improper_ctypes,
-            deref_nullptr,
-            dead_code,
-            clippy::approx_constant,
-            clippy::upper_case_acronyms
-        )]
-
-        include!(concat!(env!("OUT_DIR"), "/futhark/", #target, "/futhark_lib.rs"));
-    }
-}
-
 pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
     let backend_struct = format_ident!("{}", backend.struct_name());
 
     let type_impls = manifest.types.iter().map(|typ| match typ {
         Type::Value(_) => quote!(),
-        Type::Array(array) => backend_impl_array(array),
+        Type::Array(array) => impl_array_template(array),
     });
 
     let entry_impls = manifest
         .entry_points
         .iter()
-        .map(|ep| entry_point_fn_impl(ep));
+        .map(|ep| impl_entry_point_template(ep));
 
-    let sys = sys_include(backend);
+    let sys = sys_template(backend);
 
     quote! {
         pub struct #backend_struct;
@@ -165,7 +165,7 @@ pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
     }
 }
 
-fn entry_point_fn_impl(ep: &EntryPoint) -> TokenStream {
+fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
     let name = format_ident!("{}", ep.fn_name());
 
     let rust_inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
@@ -237,7 +237,7 @@ fn entry_point_fn_impl(ep: &EntryPoint) -> TokenStream {
     }
 }
 
-fn backend_impl_array(array: &ArrayType) -> TokenStream {
+fn impl_array_template(array: &ArrayType) -> TokenStream {
     let name_type = format_ident!("{}", array.type_name());
     let name_new = format_ident!("{}", array.fn_new_name());
     let name_shape = format_ident!("{}", array.fn_shape_name());
