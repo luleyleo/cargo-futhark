@@ -15,6 +15,7 @@ pub fn types(manifest: &Manifest) -> TokenStream {
     let structs = names.map(|name| type_struct(&name));
 
     quote! {
+        #[allow(non_camel_case_types)]
         mod types {
             #(#structs)*
         }
