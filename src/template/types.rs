@@ -1,4 +1,4 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
 use crate::manifest::Manifest;
@@ -6,13 +6,13 @@ use crate::manifest::Manifest;
 pub fn template(manifest: &Manifest) -> TokenStream {
     let names = ["futhark_context_config", "futhark_context"]
         .into_iter()
-        .map(String::from)
+        .map(|ident| format_ident!("{}", ident))
         .chain(manifest.types.iter().filter_map(|typ| match typ {
             crate::manifest::Type::Value(_) => None,
-            crate::manifest::Type::Array(array) => Some(array.type_name()),
+            crate::manifest::Type::Array(array) => Some(array.type_ident()),
         }));
 
-    let structs = names.map(|name| struct_template(&name));
+    let structs = names.map(|ident| struct_template(&ident));
 
     quote! {
         #[allow(non_camel_case_types)]
@@ -22,9 +22,7 @@ pub fn template(manifest: &Manifest) -> TokenStream {
     }
 }
 
-fn struct_template(name: &str) -> TokenStream {
-    let name = format_ident!("{}", name);
-
+fn struct_template(name: &Ident) -> TokenStream {
     quote! {
         #[repr(C)]
         #[derive(Debug, Copy, Clone)]

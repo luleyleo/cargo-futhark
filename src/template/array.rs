@@ -5,19 +5,20 @@ use crate::manifest::ArrayType;
 
 pub fn template(typ: &ArrayType) -> TokenStream {
     let rank = typ.rank;
-    let struct_name = format_ident!("{}", typ.struct_name());
-    let type_name = format_ident!("{}", typ.type_name());
+    let struct_name = typ.struct_ident();
+    let type_name = typ.type_ident();
 
-    let fn_new_name = format_ident!("{}", typ.fn_new_name());
-    let fn_shape_name = format_ident!("{}", typ.fn_shape_name());
-    let fn_values_name = format_ident!("{}", typ.fn_values_name());
-    let fn_free_name = format_ident!("{}", typ.fn_free_name());
+    let fn_new_name = typ.fn_new_ident();
+    let fn_shape_name = typ.fn_shape_ident();
+    let fn_values_name = typ.fn_values_ident();
+    let fn_free_name = typ.fn_free_ident();
 
     let dim_param_names = (0..rank)
         .map(|i| format_ident!("dim_{i}"))
         .collect::<Vec<_>>();
 
     quote! {
+        #[allow(non_camel_case_types)]
         pub struct #struct_name <'c, B: Backend> {
             context: &'c Context<B>,
             pub(crate) inner: *mut types::#type_name,

@@ -1,3 +1,6 @@
+use proc_macro2::Ident;
+use quote::format_ident;
+
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, Copy)]
 pub enum ValueType {
@@ -31,8 +34,8 @@ impl ValueType {
         ]
     }
 
-    pub fn rust_name(&self) -> &'static str {
-        match self {
+    pub fn ident(&self) -> Ident {
+        let str = match self {
             ValueType::i8 => "i8",
             ValueType::i16 => "i16",
             ValueType::i32 => "i32",
@@ -44,10 +47,12 @@ impl ValueType {
             ValueType::f16 => "f32", // special
             ValueType::f32 => "f32",
             ValueType::f64 => "f64",
-        }
+        };
+
+        format_ident!("{}", str)
     }
 
-    pub fn futhark_name(&self) -> &'static str {
+    pub fn name(&self) -> &'static str {
         match self {
             ValueType::i8 => "i8",
             ValueType::i16 => "i16",

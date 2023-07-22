@@ -50,19 +50,19 @@ pub fn trait_template(manifest: &Manifest) -> TokenStream {
 }
 
 fn trait_array_template(array: &ArrayType) -> TokenStream {
-    let elem_name = format_ident!("{}", array.elements.rust_name());
-    let type_name = format_ident!("{}", array.type_name());
+    let elem_name = array.elements.ident();
+    let type_name = array.type_ident();
 
-    let name_new = format_ident!("{}", array.fn_new_name());
+    let name_new = array.fn_new_ident();
     let param_new = (0..array.rank).map(|i| {
         let ident = format_ident!("dim_{}", i);
 
         quote!(#ident: i64)
     });
 
-    let name_shape = format_ident!("{}", array.fn_shape_name());
-    let name_values = format_ident!("{}", array.fn_values_name());
-    let name_free = format_ident!("{}", array.fn_free_name());
+    let name_shape = array.fn_shape_ident();
+    let name_values = array.fn_values_ident();
+    let name_free = array.fn_free_ident();
 
     quote! {
         unsafe fn #name_new(ctx: *mut types::futhark_context, data: *const #elem_name, #(#param_new),*) -> *mut types::#type_name;
@@ -73,18 +73,18 @@ fn trait_array_template(array: &ArrayType) -> TokenStream {
 }
 
 fn trait_entry_point_template(ep: &EntryPoint) -> TokenStream {
-    let name = format_ident!("{}", ep.fn_name());
+    let name = ep.futhark_fn_ident();
 
     let inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
         let input_name = format_ident!("in_{}", i);
 
         match typ {
             Type::Value(value) => {
-                let type_name = format_ident!("{}", value.rust_name());
+                let type_name = value.ident();
                 quote!(#input_name: #type_name)
             }
             Type::Array(array) => {
-                let type_name = format_ident!("{}", array.type_name());
+                let type_name = array.type_ident();
                 quote!(#input_name: *const types::#type_name)
             }
         }
@@ -95,11 +95,11 @@ fn trait_entry_point_template(ep: &EntryPoint) -> TokenStream {
 
         match typ {
             Type::Value(value) => {
-                let type_name = format_ident!("{}", value.rust_name());
+                let type_name = value.ident();
                 quote!(#output_name: *mut #type_name)
             }
             Type::Array(array) => {
-                let type_name = format_ident!("{}", array.type_name());
+                let type_name = array.type_ident();
                 quote!(#output_name: *mut *mut types::#type_name)
             }
         }
@@ -166,18 +166,18 @@ pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
 }
 
 fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
-    let name = format_ident!("{}", ep.fn_name());
+    let name = ep.futhark_fn_ident();
 
     let rust_inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
         let input_name = format_ident!("in_{}", i);
 
         match typ {
             Type::Value(value) => {
-                let type_name = format_ident!("{}", value.rust_name());
+                let type_name = value.ident();
                 quote!(#input_name: #type_name)
             }
             Type::Array(array) => {
-                let type_name = format_ident!("{}", array.type_name());
+                let type_name = array.type_ident();
                 quote!(#input_name: *const types::#type_name)
             }
         }
@@ -188,11 +188,11 @@ fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
 
         match typ {
             Type::Value(value) => {
-                let type_name = format_ident!("{}", value.rust_name());
+                let type_name = value.ident();
                 quote!(#output_name: *mut #type_name)
             }
             Type::Array(array) => {
-                let type_name = format_ident!("{}", array.type_name());
+                let type_name = array.type_ident();
                 quote!(#output_name: *mut *mut types::#type_name)
             }
         }
@@ -206,7 +206,7 @@ fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
                 quote!(#input_name)
             }
             Type::Array(array) => {
-                let type_name = format_ident!("{}", array.type_name());
+                let type_name = array.type_ident();
                 quote!(#input_name as *const sys::#type_name)
             }
         }
@@ -220,7 +220,7 @@ fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
                 quote!(#output_name)
             }
             Type::Array(array) => {
-                let type_name = format_ident!("{}", array.type_name());
+                let type_name = array.type_ident();
                 quote!(#output_name as *mut *mut sys::#type_name)
             }
         }
@@ -238,11 +238,11 @@ fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
 }
 
 fn impl_array_template(array: &ArrayType) -> TokenStream {
-    let name_type = format_ident!("{}", array.type_name());
-    let name_new = format_ident!("{}", array.fn_new_name());
-    let name_shape = format_ident!("{}", array.fn_shape_name());
-    let name_values = format_ident!("{}", array.fn_values_name());
-    let name_free = format_ident!("{}", array.fn_free_name());
+    let name_type = array.type_ident();
+    let name_new = array.fn_new_ident();
+    let name_shape = array.fn_shape_ident();
+    let name_values = array.fn_values_ident();
+    let name_free = array.fn_free_ident();
 
     let dims_new = (0..array.rank)
         .map(|i| format_ident!("dim_{}", i))

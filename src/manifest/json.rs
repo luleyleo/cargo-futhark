@@ -14,7 +14,7 @@ pub fn load(manifest_file_content: &str) -> eyre::Result<Manifest> {
     types.extend(
         ValueType::variants()
             .iter()
-            .map(|typ| (typ.futhark_name().to_string(), Type::Value(*typ))),
+            .map(|typ| (typ.name().to_string(), Type::Value(*typ))),
     );
 
     for (name, typ) in json["types"].as_object().unwrap() {

@@ -5,7 +5,7 @@ fn main() {
     let context = simple_lib::Context::new(config);
 
     let input = &[1.0, 2.0, 3.0];
-    let input = simple_lib::F64_1D::new(&context, input, input.len());
+    let input = simple_lib::Array_F64_1D::new(&context, input, input.len());
     let double = context.entry_double(&input).unwrap();
     let average = context.entry_average(&double).unwrap();
 

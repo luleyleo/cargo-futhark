@@ -50,20 +50,20 @@ pub fn template(manifest: &Manifest) -> TokenStream {
 }
 
 fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
-    let name = format_ident!("{}", ep.fn_name());
-    let context_name = format_ident!("{}", ep.context_fn_name());
+    let name = ep.futhark_fn_ident();
+    let context_name = ep.context_fn_ident();
 
     let in_params = ep.inputs.iter().enumerate().map(|(i, input)| {
         let name = format_ident!("in_{}", i);
 
         match input {
             Type::Value(value) => {
-                let typ = format_ident!("{}", value.rust_name());
+                let typ = value.ident();
 
                 quote!(#name: #typ)
             }
             Type::Array(array) => {
-                let typ = format_ident!("{}", array.struct_name());
+                let typ = array.struct_ident();
 
                 quote!(#name: &#typ<B>)
             }
@@ -72,12 +72,12 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
 
     let out_params = ep.outputs.iter().map(|input| match input {
         Type::Value(value) => {
-            let typ = format_ident!("{}", value.rust_name());
+            let typ = value.ident();
 
             quote!(#typ)
         }
         Type::Array(array) => {
-            let typ = format_ident!("{}", array.struct_name());
+            let typ = array.struct_ident();
 
             quote!(#typ<B>)
         }
@@ -88,12 +88,12 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
 
         match input {
             Type::Value(value) => {
-                let typ = format_ident!("{}", value.rust_name());
+                let typ = value.ident();
 
                 quote!(let mut #name: #typ = Default::default();)
             }
             Type::Array(array) => {
-                let typ = format_ident!("{}", array.struct_name());
+                let typ = array.struct_ident();
 
                 quote! {
                     let mut #name = #typ {
