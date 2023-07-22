@@ -6,7 +6,7 @@ use enumflags2::BitFlags;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
-mod arrays;
+mod array;
 mod backend;
 mod config;
 mod context;
@@ -20,7 +20,7 @@ pub fn combined(manifest: &Manifest, targets: BitFlags<Target>) -> TokenStream {
 
     let structs = manifest.types.iter().map(|typ| match typ {
         Type::Value(_) => quote!(),
-        Type::Array(array) => arrays::template(array),
+        Type::Array(array) => array::template(array),
     });
 
     let backends = targets.iter().map(|target| {
