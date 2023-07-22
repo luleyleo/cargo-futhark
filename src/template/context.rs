@@ -50,10 +50,10 @@ pub fn template(manifest: &Manifest) -> TokenStream {
 }
 
 fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
-    let name = ep.futhark_fn_ident();
-    let context_name = ep.context_fn_ident();
+    let futhark_entry_name = ep.futhark_fn_ident();
+    let entry_name = ep.context_fn_ident();
 
-    let in_params = ep.inputs.iter().enumerate().map(|(i, input)| {
+    let rust_input = ep.inputs.iter().enumerate().map(|(i, input)| {
         let name = format_ident!("in_{}", i);
 
         match input {
@@ -70,7 +70,7 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
         }
     });
 
-    let out_params = ep.outputs.iter().map(|input| match input {
+    let rust_output = ep.outputs.iter().map(|input| match input {
         Type::Value(value) => {
             let typ = value.ident();
 
@@ -83,7 +83,7 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
         }
     });
 
-    let let_out_vars = ep.outputs.iter().enumerate().map(|(i, input)| {
+    let let_output_vars = ep.outputs.iter().enumerate().map(|(i, input)| {
         let name = format_ident!("out_{}", i);
 
         match input {
@@ -105,7 +105,7 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
         }
     });
 
-    let out_vars_params = ep
+    let futhark_output = ep
         .outputs
         .iter()
         .enumerate()
@@ -115,7 +115,7 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
             Type::Array(_) => quote!(#ident.inner),
         });
 
-    let in_vars_params = ep
+    let futhark_input = ep
         .inputs
         .iter()
         .enumerate()
@@ -125,7 +125,7 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
             Type::Array(_) => quote!(#ident.inner),
         });
 
-    let out_vars = ep
+    let output_vars = ep
         .outputs
         .iter()
         .enumerate()
@@ -133,15 +133,15 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
 
     quote! {
         #[allow(unused_parens)]
-        pub fn #context_name(&self, #(#in_params),*) -> Result<(#(#out_params),*), i64> {
-            #(#let_out_vars)*
+        pub fn #entry_name(&self, #(#rust_input),*) -> Result<(#(#rust_output),*), i64> {
+            #(#let_output_vars)*
 
             let status = unsafe {
-                B::#name(self.inner, #(&mut #out_vars_params),*, #(#in_vars_params),*)
+                B::#futhark_entry_name(self.inner, #(&mut #futhark_output),*, #(#futhark_input),*)
             };
 
             match status {
-                0 => Ok((#(#out_vars),*)),
+                0 => Ok((#(#output_vars),*)),
                 err => Err(err.into()),
             }
         }

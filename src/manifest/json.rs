@@ -44,7 +44,10 @@ fn load_array(obj: &Map<String, Value>) -> ArrayType {
     let elements = ValueType::from_manifest(obj["elemtype"].as_str().unwrap()).unwrap();
     let rank = obj["rank"].as_i64().unwrap() as usize;
 
-    ArrayType { elements, rank }
+    ArrayType {
+        elements_type: elements,
+        rank,
+    }
 }
 
 fn load_entry_point(

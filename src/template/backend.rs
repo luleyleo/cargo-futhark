@@ -6,8 +6,8 @@ use crate::{
     Target,
 };
 
-fn sys_template(backend: Target) -> TokenStream {
-    let target = backend.name();
+fn sys_template(target: Target) -> TokenStream {
+    let target = target.name();
 
     quote! {
         #![allow(
@@ -50,11 +50,11 @@ pub fn trait_template(manifest: &Manifest) -> TokenStream {
 }
 
 fn trait_array_template(array: &ArrayType) -> TokenStream {
-    let elem_name = array.elements.ident();
+    let elem_type_name = array.elements_type.ident();
     let type_name = array.type_ident();
 
     let name_new = array.fn_new_ident();
-    let param_new = (0..array.rank).map(|i| {
+    let params_new = (0..array.rank).map(|i| {
         let ident = format_ident!("dim_{}", i);
 
         quote!(#ident: i64)
@@ -65,15 +65,15 @@ fn trait_array_template(array: &ArrayType) -> TokenStream {
     let name_free = array.fn_free_ident();
 
     quote! {
-        unsafe fn #name_new(ctx: *mut types::futhark_context, data: *const #elem_name, #(#param_new),*) -> *mut types::#type_name;
+        unsafe fn #name_new(ctx: *mut types::futhark_context, data: *const #elem_type_name, #(#params_new),*) -> *mut types::#type_name;
         unsafe fn #name_shape(ctx: *mut types::futhark_context, array: *mut types::#type_name) -> *const i64;
-        unsafe fn #name_values(ctx: *mut types::futhark_context, array: *mut types::#type_name, data: *mut #elem_name) -> std::os::raw::c_int;
+        unsafe fn #name_values(ctx: *mut types::futhark_context, array: *mut types::#type_name, data: *mut #elem_type_name) -> std::os::raw::c_int;
         unsafe fn #name_free(ctx: *mut types::futhark_context, array: *mut types::#type_name) -> std::os::raw::c_int;
     }
 }
 
 fn trait_entry_point_template(ep: &EntryPoint) -> TokenStream {
-    let name = ep.futhark_fn_ident();
+    let entry_name = ep.futhark_fn_ident();
 
     let inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
         let input_name = format_ident!("in_{}", i);
@@ -106,7 +106,7 @@ fn trait_entry_point_template(ep: &EntryPoint) -> TokenStream {
     });
 
     quote! {
-        unsafe fn #name (ctx: *mut types::futhark_context, #(#outputs),*, #(#inputs),*) -> std::ffi::c_int;
+        unsafe fn #entry_name (ctx: *mut types::futhark_context, #(#outputs),*, #(#inputs),*) -> std::ffi::c_int;
     }
 }
 
@@ -166,7 +166,7 @@ pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
 }
 
 fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
-    let name = ep.futhark_fn_ident();
+    let entry_name = ep.futhark_fn_ident();
 
     let rust_inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
         let input_name = format_ident!("in_{}", i);
@@ -227,8 +227,8 @@ fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
     });
 
     quote! {
-        unsafe fn #name (ctx: *mut types::futhark_context, #(#rust_outputs),*, #(#rust_inputs),*) -> std::ffi::c_int {
-            sys::#name(
+        unsafe fn #entry_name (ctx: *mut types::futhark_context, #(#rust_outputs),*, #(#rust_inputs),*) -> std::ffi::c_int {
+            sys::#entry_name(
                 ctx as *mut sys::futhark_context,
                 #(#futhark_outputs),*,
                 #(#futhark_inputs),*

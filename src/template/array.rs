@@ -7,13 +7,12 @@ pub fn template(typ: &ArrayType) -> TokenStream {
     let rank = typ.rank;
     let struct_name = typ.struct_ident();
     let type_name = typ.type_ident();
-
     let fn_new_name = typ.fn_new_ident();
     let fn_shape_name = typ.fn_shape_ident();
     let fn_values_name = typ.fn_values_ident();
     let fn_free_name = typ.fn_free_ident();
 
-    let dim_param_names = (0..rank)
+    let dim_params = (0..rank)
         .map(|i| format_ident!("dim_{i}"))
         .collect::<Vec<_>>();
 
@@ -25,14 +24,14 @@ pub fn template(typ: &ArrayType) -> TokenStream {
         }
 
         impl<'c, B: Backend> #struct_name <'c, B> {
-            pub fn new(context: &'c Context<B>, data: &[f64], #(#dim_param_names: usize),*) -> Self {
-                assert_eq!(#(#dim_param_names *)* 1, data.len());
+            pub fn new(context: &'c Context<B>, data: &[f64], #(#dim_params: usize),*) -> Self {
+                assert_eq!(#(#dim_params *)* 1, data.len());
 
                 let inner = unsafe {
                     B::#fn_new_name(
                         context.inner,
                         data.as_ptr(),
-                        #(#dim_param_names.try_into().unwrap()),*
+                        #(#dim_params.try_into().unwrap()),*
                     )
                 };
 
