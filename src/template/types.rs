@@ -3,7 +3,7 @@ use quote::{format_ident, quote};
 
 use crate::manifest::Manifest;
 
-pub fn types(manifest: &Manifest) -> TokenStream {
+pub fn template(manifest: &Manifest) -> TokenStream {
     let names = ["futhark_context_config", "futhark_context"]
         .into_iter()
         .map(String::from)
@@ -12,7 +12,7 @@ pub fn types(manifest: &Manifest) -> TokenStream {
             crate::manifest::Type::Array(array) => Some(array.type_name()),
         }));
 
-    let structs = names.map(|name| type_struct(&name));
+    let structs = names.map(|name| struct_template(&name));
 
     quote! {
         #[allow(non_camel_case_types)]
@@ -22,7 +22,7 @@ pub fn types(manifest: &Manifest) -> TokenStream {
     }
 }
 
-fn type_struct(name: &str) -> TokenStream {
+fn struct_template(name: &str) -> TokenStream {
     let name = format_ident!("{}", name);
 
     quote! {

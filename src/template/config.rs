@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 
-pub fn config() -> TokenStream {
+pub fn template() -> TokenStream {
     quote::quote! {
         pub struct Config<B: Backend> {
             _phantom: PhantomData<B>,

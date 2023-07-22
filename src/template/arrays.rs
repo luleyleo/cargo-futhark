@@ -3,7 +3,7 @@ use quote::{format_ident, quote};
 
 use crate::manifest::ArrayType;
 
-pub fn array_struct(typ: &ArrayType) -> TokenStream {
+pub fn template(typ: &ArrayType) -> TokenStream {
     let rank = typ.rank;
     let struct_name = format_ident!("{}", typ.struct_name());
     let type_name = format_ident!("{}", typ.type_name());

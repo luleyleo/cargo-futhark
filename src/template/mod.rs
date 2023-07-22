@@ -7,35 +7,26 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
 mod arrays;
-pub use arrays::array_struct;
-
 mod backend;
-pub use backend::{backend_impl, backend_trait};
-
-mod types;
-pub use types::types;
-
 mod config;
-pub use config::config;
-
 mod context;
-pub use context::context;
+mod types;
 
 pub fn combined(manifest: &Manifest, targets: BitFlags<Target>) -> TokenStream {
-    let config = config();
-    let context = context(manifest);
-    let types = types(manifest);
-    let backend_trait = backend_trait(manifest);
+    let config = config::template();
+    let context = context::template(manifest);
+    let types = types::template(manifest);
+    let backend_trait = backend::trait_template(manifest);
 
     let structs = manifest.types.iter().map(|typ| match typ {
         Type::Value(_) => quote!(),
-        Type::Array(array) => array_struct(array),
+        Type::Array(array) => arrays::template(array),
     });
 
     let backends = targets.iter().map(|target| {
         let target_name = format_ident!("{}", target.name());
         let target_struct_name = format_ident!("{}", target.struct_name());
-        let target_impl = backend_impl(manifest, target);
+        let target_impl = backend::impl_template(manifest, target);
 
         quote! {
             mod #target_name {
@@ -60,6 +51,7 @@ pub fn combined(manifest: &Manifest, targets: BitFlags<Target>) -> TokenStream {
             use super::types;
 
             #backend_trait
+
             #(#backends)*
         }
         use backends::Backend;

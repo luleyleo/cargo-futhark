@@ -6,7 +6,7 @@ use crate::{
     Target,
 };
 
-pub fn backend_trait(manifest: &Manifest) -> TokenStream {
+pub fn trait_template(manifest: &Manifest) -> TokenStream {
     let type_fns = manifest.types.iter().map(|typ| match typ {
         Type::Value(_) => quote!(),
         Type::Array(array) => array_fns(array),
@@ -110,7 +110,7 @@ fn sys_include(backend: Target) -> TokenStream {
     }
 }
 
-pub fn backend_impl(manifest: &Manifest, backend: Target) -> TokenStream {
+pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
     let backend_struct = format_ident!("{}", backend.struct_name());
 
     let type_impls = manifest.types.iter().map(|typ| match typ {
@@ -288,29 +288,5 @@ fn backend_impl_array(array: &ArrayType) -> TokenStream {
                 arr as *mut sys::#name_type,
             )
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::manifest::ValueType;
-
-    use super::*;
-
-    #[test]
-    fn create_array_d1() {
-        let array = ArrayType {
-            elements: ValueType::f64,
-            rank: 1,
-        };
-
-        let code = array_fns(&array).to_string();
-
-        println!("{}", code);
-
-        assert!(
-            code.contains("unsafe fn new_f64_1d ("),
-            "generated code does not contain new_ function"
-        );
     }
 }

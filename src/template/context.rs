@@ -3,8 +3,8 @@ use quote::{format_ident, quote};
 
 use crate::manifest::{EntryPoint, Manifest, Type};
 
-pub fn context(manifest: &Manifest) -> TokenStream {
-    let entry_fns = manifest.entry_points.iter().map(context_entry_fn);
+pub fn template(manifest: &Manifest) -> TokenStream {
+    let entry_fns = manifest.entry_points.iter().map(entry_fn_template);
 
     quote::quote! {
         pub struct Context<B: Backend> {
@@ -49,7 +49,7 @@ pub fn context(manifest: &Manifest) -> TokenStream {
     }
 }
 
-fn context_entry_fn(ep: &EntryPoint) -> TokenStream {
+fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
     let name = format_ident!("{}", ep.fn_name());
     let context_name = format_ident!("{}", ep.context_fn_name());
 
