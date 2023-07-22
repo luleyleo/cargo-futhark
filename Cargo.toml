@@ -1,0 +1,18 @@
+[package]
+name = "futhark-rust"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["examples/simple"]
+
+[dependencies]
+bindgen = "0.65.1"
+cc = "1.0.79"
+enumflags2 = { version = "0.7.7", features = ["std"] }
+eyre = "0.6.8"
+proc-macro2 = "1.0.66"
+quote = "1.0.31"
+rerun_except = "1.0.0"
+serde = "1.0.174"
+serde_json = "1.0.103"

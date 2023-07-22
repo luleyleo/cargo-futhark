@@ -1,0 +1,763 @@
+{
+    "backend": "c",
+    "entry_points": {
+        "attractive_sector": {
+            "cfun": "futhark_entry_attractive_sector",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "M",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "bent_cigar": {
+            "cfun": "futhark_entry_bent_cigar",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "bueche_rastrigin": {
+            "cfun": "futhark_entry_bueche_rastrigin",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "different_powers": {
+            "cfun": "futhark_entry_different_powers",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "discus": {
+            "cfun": "futhark_entry_discus",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "ellipsoidal": {
+            "cfun": "futhark_entry_ellipsoidal",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "ellipsoidal_rotated": {
+            "cfun": "futhark_entry_ellipsoidal_rotated",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "gallagher": {
+            "cfun": "futhark_entry_gallagher",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "y",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "w",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "c",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "griewank_rosenbrock": {
+            "cfun": "futhark_entry_griewank_rosenbrock",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "katsuura": {
+            "cfun": "futhark_entry_katsuura",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "Q",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "linear_slope": {
+            "cfun": "futhark_entry_linear_slope",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "lunacek": {
+            "cfun": "futhark_entry_lunacek",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "opt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "rastrigin": {
+            "cfun": "futhark_entry_rastrigin",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "rastrigin_rotated": {
+            "cfun": "futhark_entry_rastrigin_rotated",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "Q",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "rosenbrock": {
+            "cfun": "futhark_entry_rosenbrock",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "rosenbrock_rotated": {
+            "cfun": "futhark_entry_rosenbrock_rotated",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "schaffers_f7": {
+            "cfun": "futhark_entry_schaffers_f7",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "Q",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "schaffers_f7_ill": {
+            "cfun": "futhark_entry_schaffers_f7_ill",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "Q",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "schwefel": {
+            "cfun": "futhark_entry_schwefel",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "sharp_ridge": {
+            "cfun": "futhark_entry_sharp_ridge",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "M",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "sphere": {
+            "cfun": "futhark_entry_sphere",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "step_ellipsoidal": {
+            "cfun": "futhark_entry_step_ellipsoidal",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "Q",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        },
+        "weierstrass": {
+            "cfun": "futhark_entry_weierstrass",
+            "inputs": [
+                {
+                    "name": "x",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "xopt",
+                    "type": "[]f64",
+                    "unique": false
+                },
+                {
+                    "name": "fopt",
+                    "type": "f64",
+                    "unique": false
+                },
+                {
+                    "name": "R",
+                    "type": "[][]f64",
+                    "unique": false
+                },
+                {
+                    "name": "Q",
+                    "type": "[][]f64",
+                    "unique": false
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "[]f64",
+                    "unique": false
+                }
+            ],
+            "tuning_params": []
+        }
+    },
+    "types": {
+        "[][]f64": {
+            "ctype": "struct futhark_f64_2d *",
+            "elemtype": "f64",
+            "kind": "array",
+            "ops": {
+                "free": "futhark_free_f64_2d",
+                "new": "futhark_new_f64_2d",
+                "shape": "futhark_shape_f64_2d",
+                "values": "futhark_values_f64_2d"
+            },
+            "rank": 2
+        },
+        "[]f64": {
+            "ctype": "struct futhark_f64_1d *",
+            "elemtype": "f64",
+            "kind": "array",
+            "ops": {
+                "free": "futhark_free_f64_1d",
+                "new": "futhark_new_f64_1d",
+                "shape": "futhark_shape_f64_1d",
+                "values": "futhark_values_f64_1d"
+            },
+            "rank": 1
+        }
+    },
+    "version": "0.24.3\ngit: d4bc0f4492975707688d225498e740a8f2e8a857"
+}
