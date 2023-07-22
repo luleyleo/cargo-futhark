@@ -1,9 +1,7 @@
-use futhark_rust::{Generator, Target};
+use futhark_rust::{Generator, Result, Target};
 
-fn main() {
+fn main() -> Result<()> {
     Generator::new("futhark/lib.fut")
-        .expect("Futhark source not found.")
         .with_target(Target::C)
         .run()
-        .expect("Failed to run generator.");
 }

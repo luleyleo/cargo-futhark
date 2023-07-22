@@ -42,16 +42,12 @@ pub struct Generator {
 }
 
 impl Generator {
-    pub fn new(source: impl Into<PathBuf>) -> Result<Self> {
-        let source = source.into();
-
-        ensure!(source.is_file(), "Futhark source file does not exist.");
-
-        Ok(Generator {
-            source,
+    pub fn new(source: impl Into<PathBuf>) -> Self {
+        Generator {
+            source: source.into(),
             watch: true,
             targets: BitFlags::empty(),
-        })
+        }
     }
 
     pub fn watch_sources(&mut self, watch: bool) -> &mut Self {
@@ -65,9 +61,11 @@ impl Generator {
     }
 
     pub fn run(&mut self) -> Result<()> {
+        ensure!(self.source.is_file(), "Futhark source file does not exist.");
+
         ensure!(
             !self.targets.is_empty(),
-            "Generator target must not be empty."
+            "At least one target must be built."
         );
 
         self.build_targets().wrap_err("Failed to build targets.")?;
