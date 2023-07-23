@@ -9,8 +9,10 @@ members = ["examples/simple", "examples/simple-lib"]
 [dependencies]
 bindgen = "0.65.1"
 cc = "1.0.79"
+clap = { version = "4.3.19", features = ["derive"] }
 enumflags2 = { version = "0.7.7", features = ["std"] }
 eyre = "0.6.8"
+include_dir = "0.7.3"
 proc-macro2 = "1.0.66"
 quote = "1.0.31"
 rerun_except = "1.0.0"
