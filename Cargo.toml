@@ -1,5 +1,5 @@
 [package]
-name = "futhark-rust"
+name = "cargo-futhark"
 version = "0.1.0"
 edition = "2021"
 
