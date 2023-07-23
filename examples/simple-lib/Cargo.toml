@@ -3,5 +3,13 @@ name = "simple-lib"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = ["c"]
+c = []
+multicore = []
+opencl = []
+cuda = []
+ispc = []
+
 [build-dependencies]
 cargo-futhark = { path = "../.." }

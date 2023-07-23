@@ -60,6 +60,13 @@ impl Generator {
         self
     }
 
+    pub fn with_target_if(&mut self, target: Target, condition: bool) -> &mut Self {
+        if condition {
+            self.targets |= target;
+        }
+        self
+    }
+
     pub fn run(&mut self) -> Result<()> {
         ensure!(self.source.is_file(), "Futhark source file does not exist.");
 
