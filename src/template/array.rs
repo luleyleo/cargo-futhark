@@ -12,11 +12,21 @@ pub fn template(typ: &ArrayType) -> TokenStream {
     let fn_values_name = typ.fn_values_ident();
     let fn_free_name = typ.fn_free_ident();
 
+    let summary_doc = format!(
+        "Array of type `{}` and rank `{}`.",
+        typ.elements_type.name(),
+        typ.rank
+    );
+
     let dim_params = (0..rank)
         .map(|i| format_ident!("dim_{i}"))
         .collect::<Vec<_>>();
 
     quote! {
+        #[doc = #summary_doc]
+        ///
+        /// # Immutability
+        /// Futhark arrays can not be mutated once they've been created.
         #[allow(non_camel_case_types)]
         pub struct #struct_name <'c, B: Backend> {
             context: &'c Context<B>,
@@ -24,6 +34,9 @@ pub fn template(typ: &ArrayType) -> TokenStream {
         }
 
         impl<'c, B: Backend> #struct_name <'c, B> {
+            /// Create a new Futhark array from a flat buffer.
+            ///
+            ///  Multi-dimensional arrays are expect row-major form.
             #[allow(clippy::identity_op)]
             pub fn new(context: &'c Context<B>, data: &[f64], #(#dim_params: usize),*) -> Self {
                 assert_eq!(#(#dim_params *)* 1, data.len());
@@ -40,6 +53,9 @@ pub fn template(typ: &ArrayType) -> TokenStream {
                 #struct_name { context, inner }
             }
 
+            /// Returns the arrays shape
+            ///
+            /// The length of `array.shape()` is its rank.
             pub fn shape(&self) -> &[usize] {
                 unsafe {
                     let shape = B::#fn_shape_name(self.context.inner, self.inner);
@@ -47,9 +63,17 @@ pub fn template(typ: &ArrayType) -> TokenStream {
                 }
             }
 
+            /// Read the arrays values to a buffer.
+            ///
+            /// The `out` buffer will have the length of the `shape`s product.
+            ///  Multi-dimensional arrays are written in row-major form.
+            ///
+            /// # Important
+            /// Before calling this, you most likely want to call [`Context::sync`] first.
+            /// See the documentation of [`Context::sync`] for more details.
             pub fn values(&self, out: &mut Vec<f64>) {
                 let s = self.shape();
-                let len = s[0] * s[1];
+                let len = s.iter().product::<usize>();
 
                 out.reserve(len - out.capacity());
                 unsafe {
