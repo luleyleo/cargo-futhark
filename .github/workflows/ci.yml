@@ -8,6 +8,7 @@ on:
 
 env:
   RUST_VERSION: 1.71.0
+  FUTHARK_VERSION: 0.25.2
   CARGO_TERM_COLOR: always
 
 jobs:
@@ -25,6 +26,11 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
           override: true
           components: clippy
+
+      - name: Install futhark
+        uses: luleyleo/install-futhark-action@0.1.0
+        with:
+          version: ${{ env.FUTHARK_VERSION }}
 
       - name: Run cargo check
         uses: actions-rs/cargo@v1
@@ -50,6 +56,11 @@ jobs:
           profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
           override: true
+
+      - name: Install futhark
+        uses: luleyleo/install-futhark-action@0.1.0
+        with:
+          version: ${{ env.FUTHARK_VERSION }}
 
       - name: Run cargo test
         uses: actions-rs/cargo@v1
@@ -93,6 +104,11 @@ jobs:
           profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
           override: true
+
+      - name: Install futhark
+        uses: luleyleo/install-futhark-action@0.1.0
+        with:
+          version: ${{ env.FUTHARK_VERSION }}
 
       - name: Run cargo doc
         uses: actions-rs/cargo@v1
