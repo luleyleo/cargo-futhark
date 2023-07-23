@@ -9,7 +9,6 @@ authors = ["Leopold Luley <git@leopoldluley.de>"]
 repository = "https://github.com/luleyleo/cargo-futhark"
 keywords = ["cargo", "futhark", "bindgen"]
 categories = ["compilers", "command-line-utilities", "development-tools::build-utils", "development-tools::cargo-plugins", "api-bindings"]
-readme = "Readme.md"
 
 [workspace]
 members = ["examples/simple", "examples/simple-lib"]
