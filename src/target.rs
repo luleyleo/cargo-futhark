@@ -2,14 +2,40 @@ use enumflags2::bitflags;
 
 use std::fmt::Display;
 
+/// Futhark targets.
 #[bitflags]
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Target {
+    /// Futhark `c` target.
+    ///
+    /// # Requirements
+    /// None
     C,
+
+    /// Futhark `multicore` target.
+    ///
+    /// # Requirements
+    /// None
     MultiCore,
+
+    /// Futhark `opencl` target.
+    ///
+    /// # Requirements
+    /// - OpenCL headers
+    /// - OpenCL loader
     OpenCL,
+
+    /// Futhark `cuda` target.
+    ///
+    /// # Requirements
+    /// - Nvidia CUDA SDK
     Cuda,
+
+    /// Futhark `ispc` target.
+    ///
+    /// # Requirements
+    /// - Intel ISPC SDK
     ISPC,
 }
 

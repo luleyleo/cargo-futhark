@@ -35,6 +35,30 @@ fn cargo_manifest_dir() -> Result<PathBuf> {
         .map(PathBuf::from)
 }
 
+/// Bindings generator.
+///
+/// This does:
+/// - Compile Futhark code to C code for each target.
+/// - Generate unsafe Rust bindings for each target.
+/// - Generate a single safe wrapper around all targets.
+/// - Compile and link generated C code.
+///
+/// # Usage
+///
+/// In your `build.rs` file:
+/// ```no_run
+/// use cargo_futhark::{Generator, Result, Target};
+///
+/// fn main() -> Result<()> {
+///     Generator::new("src/lib.fut")
+///         .with_target_if(Target::C, cfg!(feature = "c"))
+///         .with_target_if(Target::MultiCore, cfg!(feature = "multicore"))
+///         .with_target_if(Target::OpenCL, cfg!(feature = "opencl"))
+///         .with_target_if(Target::Cuda, cfg!(feature = "cuda"))
+///         .with_target_if(Target::ISPC, cfg!(feature = "ispc"))
+///         .run()
+/// }
+/// ```
 pub struct Generator {
     source: PathBuf,
     watch: bool,
@@ -42,6 +66,15 @@ pub struct Generator {
 }
 
 impl Generator {
+    /// Returns a new [`Generator`] with default settings.
+    ///
+    /// The `source` should be the `.fut` file containing the `entry` functions.
+    ///
+    /// The defaults are:
+    /// - `watch_sources = true`
+    /// - `targets = EMPTY`
+    ///
+    /// You must add at least on [`Target`] before you call [`Generator::run`].
     pub fn new(source: impl Into<PathBuf>) -> Self {
         Generator {
             source: source.into(),
@@ -50,16 +83,23 @@ impl Generator {
         }
     }
 
+    /// Watch Futhark source file for changes.
+    ///
+    /// Enabled by default.
     pub fn watch_sources(&mut self, watch: bool) -> &mut Self {
         self.watch = watch;
         self
     }
 
+    /// Enable the given [Target].
     pub fn with_target(&mut self, target: Target) -> &mut Self {
         self.targets |= target;
         self
     }
 
+    /// Enable the given [Target] conditionally.
+    ///
+    /// This is especially useful with the [`cfg!`] macro.
     pub fn with_target_if(&mut self, target: Target, condition: bool) -> &mut Self {
         if condition {
             self.targets |= target;
@@ -67,6 +107,7 @@ impl Generator {
         self
     }
 
+    /// Run the generator.
     pub fn run(&mut self) -> Result<()> {
         ensure!(self.source.is_file(), "Futhark source file does not exist.");
 

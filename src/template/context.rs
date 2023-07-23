@@ -7,6 +7,10 @@ pub fn template(manifest: &Manifest) -> TokenStream {
     let entry_fns = manifest.entry_points.iter().map(entry_fn_template);
 
     quote::quote! {
+        /// Futhark context object.
+        ///
+        /// This required for anything Futhark related.
+        /// It also provides the `entry` functions.
         pub struct Context<B: Backend> {
             config: Config<B>,
             pub(crate) inner: *mut types::futhark_context,
@@ -16,16 +20,33 @@ pub fn template(manifest: &Manifest) -> TokenStream {
         unsafe impl<B: Backend> Sync for Context<B> {}
 
         impl<B: Backend> Context<B> {
+            /// Creates a new Futhark context.
             pub fn new(config: Config<B>) -> Self {
                 let inner = unsafe { B::futhark_context_new(config.inner) };
                 assert!(!inner.is_null());
                 Context { config, inner }
             }
 
+            /// Returns the configuration.
+            ///
+            /// It's read-only because it can not be changed after
+            /// [`Context::new`] has been called.
             pub fn config(&self) -> &Config<B> {
                 &self.config
             }
 
+            /// Sync execution and memory between CPU and GPU.
+            ///
+            /// # Important
+            /// **Always** call `sync` before accessing the result of any `entry` function.
+            ///
+            /// Only `C` and `MultiCore` targets have their result immediately available.
+            /// For all other targets, you have to call `sync` before using an `entry` functions return value.
+            /// This is necessary, because execution of `entry` functions happens asynchronously for most targets.
+            ///
+            /// Additionally, you have to check **both**
+            /// - the [`Result`] of the `entry` function to be [`Ok`]
+            /// - and the result of `sync` to be `true`.
             pub fn sync(&self) -> bool {
                 unsafe { B::futhark_context_sync(self.inner) == 0 }
             }
@@ -131,7 +152,14 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
         .enumerate()
         .map(|(i, _)| format_ident!("out_{}", i));
 
+    let summary_doc = format!("Entry point `{entry_name}`.");
+
     quote! {
+        #[doc = #summary_doc]
+        ///
+        /// # Important
+        /// Execution might happen asynchronously, so you have to call [`Context::sync`]
+        /// before using it. See the documentation of [`Context::sync`] for details.
         #[allow(unused_parens, clippy::double_parens)]
         pub fn #entry_name(&self, #(#rust_input),*) -> Result<(#(#rust_output),*), i64> {
             #(#let_output_vars)*

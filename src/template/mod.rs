@@ -47,6 +47,10 @@ pub fn combined(manifest: &Manifest, targets: BitFlags<Target>) -> TokenStream {
 
         #types
 
+        /// List of supported backends.
+        ///
+        /// If your desired backend is not available, you might have to modify your `build.rs`
+        /// file and add the desired `Target` to the `Generator` using `Generator::with_target`.
         #[allow(clippy::missing_safety_doc)]
         pub mod backends {
             use super::types;

@@ -34,6 +34,11 @@ pub fn trait_template(manifest: &Manifest) -> TokenStream {
     let entry_point_fns = manifest.entry_points.iter().map(trait_entry_point_template);
 
     quote! {
+        /// Trait representing a backend.
+        ///
+        /// This also provides the unsafe bindings to the generated C code,
+        /// but they are not meant to (and cannot) be used directly.
+        #[allow(missing_docs)]
         pub trait Backend {
             unsafe fn futhark_context_config_new() -> *mut types::futhark_context_config;
             unsafe fn futhark_context_config_free(cfg: *mut types::futhark_context_config);
@@ -122,7 +127,13 @@ pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
 
     let sys = sys_template(backend);
 
+    let summary_doc = format!("{backend_struct} backend.");
+
     quote! {
+        #[doc = #summary_doc]
+        ///
+        /// This can be passed to [`Config`](crate::Config),
+        /// to specify the desired backend.
         pub struct #backend_struct;
 
         mod sys {
