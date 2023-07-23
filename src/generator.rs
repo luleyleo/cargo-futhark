@@ -214,7 +214,7 @@ fn build_target(source: &Path, target: Target) -> Result<()> {
         .include("/opt/cuda/include")
         .static_flag(true)
         .warnings(false)
-        .try_compile(&format!("coco-futhark-{compiler}", compiler = target))
+        .try_compile(&format!("futhark-lib-{compiler}", compiler = target))
         .wrap_err("Failed to compile the generated c code.")?;
 
     Ok(())
