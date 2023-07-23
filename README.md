@@ -1,6 +1,6 @@
 # Cargo-Futhark integration
 
-A library and cargo subcommand to integrate Futhark into Rust projects.
+A library and cargo subcommand to conveniently integrate [Futhark](https://futhark-lang.org/) into Rust projects.
 
 ## Usage
 
@@ -31,3 +31,15 @@ members = ["futhark-lib"]
 [dependencies]
 futhark-lib = { path = "futhark-lib" }
 ```
+
+## Related Work
+
+- [crates-io:futhark](https://crates.io/crates/futhark)
+    - just a placeholder.
+- [create-io:genfut](https://crates.io/crates/genfut)
+    - no support for multiple targets
+    - no simple CLI generate project
+- [crates-io:futhark-bindgen](https://crates.io/crates/futhark-bindgen)
+    - no support for multiple targets
+    - no simple CLI generate project
+    - supports OCaml
