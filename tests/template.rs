@@ -54,7 +54,7 @@ fn run_c_target() -> Result<()> {
         .arg("run")
         .arg("-q")
         .arg("--package")
-        .arg("simple")
+        .arg("simple-example")
         .output()
         .wrap_err("Failed to run `cargo run` command.")?;
 
