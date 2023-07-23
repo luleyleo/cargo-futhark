@@ -1,5 +1,5 @@
 [package]
-name = "simple-lib"
+name = "simple-example-lib"
 version = "0.1.0"
 edition = "2021"
 

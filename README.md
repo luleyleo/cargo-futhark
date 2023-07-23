@@ -32,6 +32,19 @@ members = ["futhark-lib"]
 futhark-lib = { path = "futhark-lib" }
 ```
 
+## Examples
+
+An example can be found in the `examples` directory.
+Not that they can not be run using `cargo run --example`.
+Instead use the following command:
+
+```sh
+cargo run --package simple-example
+```
+
+The `examples/simple-lib` package contains the Futhark code
+and the `examples/simple` package contains the Rust binary using it.
+
 ## Related Work
 
 - [crates-io:futhark](https://crates.io/crates/futhark)

@@ -1,7 +1,7 @@
 [package]
-name = "simple"
+name = "simple-example"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-simple-lib = { path = "../simple-lib" }
+simple-example-lib = { path = "../simple-lib" }
