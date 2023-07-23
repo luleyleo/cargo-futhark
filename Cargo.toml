@@ -1,7 +1,15 @@
 [package]
 name = "cargo-futhark"
+description = "A library and cargo subcommand to integrate Futhark into Rust projects."
 version = "0.1.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+
+authors = ["Leopold Luley <git@leopoldluley.de>"]
+repository = "https://github.com/luleyleo/cargo-futhark"
+keywords = ["cargo", "futhark", "bindgen"]
+categories = ["compilers", "command-line-utilities", "development-tools::build-utils", "development-tools::cargo-plugins", "api-bindings"]
+readme = "Readme.md"
 
 [workspace]
 members = ["examples/simple", "examples/simple-lib"]
