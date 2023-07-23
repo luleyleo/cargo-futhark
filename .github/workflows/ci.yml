@@ -9,6 +9,7 @@ on:
 env:
   RUST_VERSION: 1.71.0
   FUTHARK_VERSION: 0.25.2
+  FUTHARK_TARGETS: c,multicore
   CARGO_TERM_COLOR: always
 
 jobs:
@@ -25,7 +26,7 @@ jobs:
           profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
           override: true
-          components: clippy
+          components: clippy, rustfmt
 
       - name: Install futhark
         uses: luleyleo/install-futhark-action@0.1.0
@@ -41,7 +42,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --workspace --all-targets --all-features -- -D warnings
+          args: --workspace --all-targets --features ${{ env.FUTHARK_TARGETS }} -- -D warnings
 
   test:
     name: Test Suite
@@ -56,6 +57,7 @@ jobs:
           profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
           override: true
+          components: rustfmt
 
       - name: Install futhark
         uses: luleyleo/install-futhark-action@0.1.0
@@ -66,7 +68,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --workspace --all-features --lib --bins --tests --examples --verbose
+          args: --workspace --features ${{ env.FUTHARK_TARGETS }} --lib --bins --tests --examples --verbose
 
   rustfmt:
     name: Format
@@ -104,6 +106,7 @@ jobs:
           profile: minimal
           toolchain: ${{ env.RUST_VERSION }}
           override: true
+          components: rustfmt
 
       - name: Install futhark
         uses: luleyleo/install-futhark-action@0.1.0
@@ -120,4 +123,4 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --workspace --all-features --doc --verbose
+          args: --workspace --features ${{ env.FUTHARK_TARGETS }} --doc --verbose
