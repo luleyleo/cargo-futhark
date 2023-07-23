@@ -47,6 +47,7 @@ pub fn combined(manifest: &Manifest, targets: BitFlags<Target>) -> TokenStream {
 
         #types
 
+        #[allow(clippy::missing_safety_doc)]
         pub mod backends {
             use super::types;
 

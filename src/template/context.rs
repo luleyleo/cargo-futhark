@@ -132,7 +132,7 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
         .map(|(i, _)| format_ident!("out_{}", i));
 
     quote! {
-        #[allow(unused_parens)]
+        #[allow(unused_parens, clippy::double_parens)]
         pub fn #entry_name(&self, #(#rust_input),*) -> Result<(#(#rust_output),*), i64> {
             #(#let_output_vars)*
 

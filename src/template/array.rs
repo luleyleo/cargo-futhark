@@ -24,6 +24,7 @@ pub fn template(typ: &ArrayType) -> TokenStream {
         }
 
         impl<'c, B: Backend> #struct_name <'c, B> {
+            #[allow(clippy::identity_op)]
             pub fn new(context: &'c Context<B>, data: &[f64], #(#dim_params: usize),*) -> Self {
                 assert_eq!(#(#dim_params *)* 1, data.len());
 
