@@ -118,10 +118,7 @@ pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
         Type::Array(array) => impl_array_template(array),
     });
 
-    let entry_impls = manifest
-        .entry_points
-        .iter()
-        .map(impl_entry_point_template);
+    let entry_impls = manifest.entry_points.iter().map(impl_entry_point_template);
 
     let sys = sys_template(backend);
 
