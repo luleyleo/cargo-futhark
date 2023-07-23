@@ -121,7 +121,7 @@ pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
     let entry_impls = manifest
         .entry_points
         .iter()
-        .map(|ep| impl_entry_point_template(ep));
+        .map(impl_entry_point_template);
 
     let sys = sys_template(backend);
 

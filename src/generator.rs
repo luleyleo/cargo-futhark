@@ -26,13 +26,13 @@ mod names {
 fn cargo_out_dir() -> Result<PathBuf> {
     env::var("OUT_DIR")
         .wrap_err("OUT_DIR is undefined.")
-        .map(|dir| PathBuf::from(dir))
+        .map(PathBuf::from)
 }
 
 fn cargo_manifest_dir() -> Result<PathBuf> {
     env::var("CARGO_MANIFEST_DIR")
         .wrap_err("CARGO_MANIFEST_DIR is undefined.")
-        .map(|dir| PathBuf::from(dir))
+        .map(PathBuf::from)
 }
 
 pub struct Generator {
@@ -115,9 +115,11 @@ impl Generator {
             .wrap_err("Failed to run rustfmt.")?
             .success();
 
-        Ok(if !rustfmt_status {
+        if !rustfmt_status {
             bail!("Failed to format generated Rust library.");
-        })
+        };
+
+        Ok(())
     }
 
     fn build_targets(&self) -> Result<()> {
@@ -163,7 +165,7 @@ fn build_target(source: &Path, target: Target) -> Result<()> {
     fs::create_dir_all(&raw_target_dir).wrap_err("Could not create raw target dir.")?;
 
     let futhark_status = Command::new("futhark")
-        .args(&[target.name(), "--library", "-o"])
+        .args([target.name(), "--library", "-o"])
         .arg(raw_target_dir.join(names::LIBRARY))
         .arg(source.as_os_str())
         .status()
@@ -244,7 +246,7 @@ fn prefix_items(prefix: &str, input: impl AsRef<Path>, output: impl AsRef<Path>)
         let new_line = line
             .replace("memblock_", memblock_prefix)
             .replace("lexical_realloc_error", lexical_realloc_error_prefix)
-            .replace("futhark_", &prefix);
+            .replace("futhark_", prefix);
 
         writeln!(out, "{}", new_line).wrap_err("Failed to write line to output file.")?;
     }
@@ -260,6 +262,7 @@ struct PrefixRemover {
 }
 
 impl PrefixRemover {
+    #[allow(clippy::new_ret_no_self)]
     pub fn new(prefix: impl ToOwned<Owned = String>) -> Box<dyn ParseCallbacks> {
         Box::new(PrefixRemover {
             prefix: prefix.to_owned(),

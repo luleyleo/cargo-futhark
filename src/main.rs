@@ -61,7 +61,7 @@ fn new_project(name: &str) -> Result<()> {
     println!("The new project '{name}' was created successfully.");
 
     if is_subproject() {
-        println!("");
+        println!();
         println!("You might want to add it to your existing Cargo.toml file:");
         println!("[workspace]");
         println!("members = [\"{name}\"]");

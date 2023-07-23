@@ -7,7 +7,7 @@ use crate::manifest::{ArrayType, EntryPoint, Manifest, Type, ValueType};
 
 pub fn load(manifest_file_content: &str) -> eyre::Result<Manifest> {
     let json: serde_json::Value =
-        serde_json::from_str(&manifest_file_content).wrap_err("Failed to parse manifest JSON.")?;
+        serde_json::from_str(manifest_file_content).wrap_err("Failed to parse manifest JSON.")?;
 
     let mut types: HashMap<String, Type> = HashMap::new();
 
@@ -62,7 +62,7 @@ fn load_entry_point(
         .unwrap()
         .iter()
         .map(|input| input["type"].as_str().unwrap())
-        .map(|input_type| types[input_type].clone())
+        .map(|input_type| types[input_type])
         .collect::<Vec<_>>();
 
     let outputs = obj["outputs"]
@@ -70,7 +70,7 @@ fn load_entry_point(
         .unwrap()
         .iter()
         .map(|input| input["type"].as_str().unwrap())
-        .map(|input_type| types[input_type].clone())
+        .map(|input_type| types[input_type])
         .collect::<Vec<_>>();
 
     EntryPoint {
