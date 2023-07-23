@@ -7,13 +7,17 @@ use include_dir::{include_dir, Dir};
 static PROJECT_TEMPLATE: Dir = include_dir!("$CARGO_MANIFEST_DIR/project-template");
 
 #[derive(Parser)]
-#[command(name = "cargo-futhark")]
+#[command(name = "cargo")]
+#[command(bin_name = "cargo")]
 #[command(author = "Leopold Luley")]
 #[command(version = "0.1")]
-#[command(about = "Manage Cargo-Futhark projects", long_about = None)]
-struct Cli {
-    #[command(subcommand)]
-    command: Commands,
+#[command(about = "Use `cargo futhark` instead")]
+enum Cli {
+    #[command(about = "Manage Cargo-Futhark projects")]
+    Futhark {
+        #[command(subcommand)]
+        command: Commands,
+    },
 }
 
 #[derive(Subcommand)]
@@ -25,8 +29,10 @@ enum Commands {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    match &cli.command {
-        Commands::New { name } => new_project(name),
+    match &cli {
+        Cli::Futhark {
+            command: Commands::New { name },
+        } => new_project(name),
     }
 }
 
