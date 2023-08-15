@@ -62,6 +62,7 @@ fn cargo_manifest_dir() -> Result<PathBuf> {
 pub struct Generator {
     source: PathBuf,
     watch: bool,
+    cuda_home: Option<PathBuf>,
     targets: BitFlags<Target>,
 }
 
@@ -78,6 +79,7 @@ impl Generator {
     pub fn new(source: impl Into<PathBuf>) -> Self {
         Generator {
             source: source.into(),
+            cuda_home: None,
             watch: true,
             targets: BitFlags::empty(),
         }
@@ -89,6 +91,21 @@ impl Generator {
     pub fn watch_sources(&mut self, watch: bool) -> &mut Self {
         self.watch = watch;
         self
+    }
+
+    /// Specify a custom CUDA home path.
+    ///
+    /// This will add the following:
+    /// - `$cuda_home/include` to include path
+    /// - `$cuda_home/lib64` to link path
+    pub fn with_cuda_home(&mut self, cuda_home: impl Into<PathBuf>) -> Result<&mut Self> {
+        let cuda_home = cuda_home.into();
+        ensure!(
+            cuda_home.to_str().is_some(),
+            "cuda_home must be representable using UTF8."
+        );
+        self.cuda_home = Some(cuda_home);
+        Ok(self)
     }
 
     /// Enable the given [Target].
@@ -169,98 +186,114 @@ impl Generator {
         }
 
         if self.targets.contains(Target::C) {
-            build_target(&self.source, Target::C).wrap_err("Failed to build C target.")?;
+            self.build_target(Target::C)
+                .wrap_err("Failed to build C target.")?;
         }
 
         if self.targets.contains(Target::MultiCore) {
-            build_target(&self.source, Target::MultiCore)
+            self.build_target(Target::MultiCore)
                 .wrap_err("Failed to build Multi-Core target.")?;
         }
 
         if self.targets.contains(Target::OpenCL) {
-            build_target(&self.source, Target::OpenCL)
+            self.build_target(Target::OpenCL)
                 .wrap_err("Failed to build OpenCL target.")?;
 
             println!("cargo:rustc-link-lib=OpenCL");
         }
 
         if self.targets.contains(Target::Cuda) {
-            build_target(&self.source, Target::Cuda).wrap_err("Failed to build Cuda target.")?;
+            self.build_target(Target::Cuda)
+                .wrap_err("Failed to build Cuda target.")?;
 
-            println!("cargo:rustc-link-search=/opt/cuda/lib64");
             println!("cargo:rustc-link-lib=cuda");
             println!("cargo:rustc-link-lib=cudart");
             println!("cargo:rustc-link-lib=nvrtc");
+
+            if let Some(cuda_home) = &self.cuda_home {
+                let cuda_lib64 = cuda_home.join("lib64");
+
+                println!("cargo:rustc-link-search={}", cuda_lib64.to_str().unwrap());
+            }
         }
 
         Ok(())
     }
-}
 
-fn build_target(source: &Path, target: Target) -> Result<()> {
-    let out_dir = cargo_out_dir()?;
-    let target_dir = out_dir.join(names::TARGET_DIR).join(target.name());
-    fs::create_dir_all(&target_dir).wrap_err("Could not create target dir.")?;
+    fn build_target(&self, target: Target) -> Result<()> {
+        let out_dir = cargo_out_dir()?;
+        let target_dir = out_dir.join(names::TARGET_DIR).join(target.name());
+        fs::create_dir_all(&target_dir).wrap_err("Could not create target dir.")?;
 
-    let raw_target_dir = out_dir.join(names::RAW_TARGET_DIR).join(target.name());
-    fs::create_dir_all(&raw_target_dir).wrap_err("Could not create raw target dir.")?;
+        let raw_target_dir = out_dir.join(names::RAW_TARGET_DIR).join(target.name());
+        fs::create_dir_all(&raw_target_dir).wrap_err("Could not create raw target dir.")?;
 
-    let futhark_status = Command::new("futhark")
-        .args([target.name(), "--library", "-o"])
-        .arg(raw_target_dir.join(names::LIBRARY))
-        .arg(source.as_os_str())
-        .status()
-        .wrap_err("Failed to run Futhark compiler.")?
-        .success();
+        let futhark_status = Command::new("futhark")
+            .args([target.name(), "--library", "-o"])
+            .arg(raw_target_dir.join(names::LIBRARY))
+            .arg(self.source.as_os_str())
+            .status()
+            .wrap_err("Failed to run Futhark compiler.")?
+            .success();
 
-    if !futhark_status {
-        bail!("Failed to compile Futhark code.");
+        if !futhark_status {
+            bail!("Failed to compile Futhark code.");
+        }
+
+        fs::copy(
+            raw_target_dir.join(names::MANIFEST),
+            target_dir.join(names::MANIFEST),
+        )
+        .wrap_err("Failed to copy manifest file")?;
+
+        let prefix = format!("futhark_{target}_");
+
+        prefix_items(
+            &prefix,
+            raw_target_dir.join(names::H_FILE),
+            target_dir.join(names::H_FILE),
+        )
+        .wrap_err("Failed to prefix header file items.")?;
+
+        prefix_items(
+            &prefix,
+            raw_target_dir.join(names::C_FILE),
+            target_dir.join(names::C_FILE),
+        )
+        .wrap_err("Failed to prefix source file items.")?;
+
+        let cuda_include_path = match (target, &self.cuda_home) {
+            (Target::Cuda, Some(cuda_home)) => Some(cuda_home.join("include")),
+            _ => None,
+        };
+
+        let cuda_include_flag = cuda_include_path
+            .as_ref()
+            .map(|path| format!("-I{}", path.to_str().unwrap()));
+
+        bindgen::Builder::default()
+            .clang_args(cuda_include_flag)
+            .header(target_dir.join(names::H_FILE).to_string_lossy())
+            .allowlist_function("free")
+            .allowlist_function("futhark_.*")
+            .allowlist_type("futhark_.*")
+            .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+            .parse_callbacks(PrefixRemover::new(prefix))
+            .generate()
+            .wrap_err("Failed to generate bindings.")?
+            .write_to_file(target_dir.join(names::RS_FILE))
+            .wrap_err("Failed to write bindings to file.")?;
+
+        cc::Build::new()
+            .file(target_dir.join(names::C_FILE))
+            .includes(cuda_include_path)
+            .static_flag(true)
+            .warnings(false)
+            .try_compile(&format!("futhark-lib-{compiler}", compiler = target))
+            .wrap_err("Failed to compile the generated c code.")?;
+
+        Ok(())
     }
-
-    fs::copy(
-        raw_target_dir.join(names::MANIFEST),
-        target_dir.join(names::MANIFEST),
-    )
-    .wrap_err("Failed to copy manifest file")?;
-
-    let prefix = format!("futhark_{target}_");
-
-    prefix_items(
-        &prefix,
-        raw_target_dir.join(names::H_FILE),
-        target_dir.join(names::H_FILE),
-    )
-    .wrap_err("Failed to prefix header file items.")?;
-
-    prefix_items(
-        &prefix,
-        raw_target_dir.join(names::C_FILE),
-        target_dir.join(names::C_FILE),
-    )
-    .wrap_err("Failed to prefix source file items.")?;
-
-    bindgen::Builder::default()
-        .clang_arg("-I/opt/cuda/include")
-        .header(target_dir.join(names::H_FILE).to_string_lossy())
-        .allowlist_function("free")
-        .allowlist_function("futhark_.*")
-        .allowlist_type("futhark_.*")
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-        .parse_callbacks(PrefixRemover::new(prefix))
-        .generate()
-        .wrap_err("Failed to generate bindings.")?
-        .write_to_file(target_dir.join(names::RS_FILE))
-        .wrap_err("Failed to write bindings to file.")?;
-
-    cc::Build::new()
-        .file(target_dir.join(names::C_FILE))
-        .include("/opt/cuda/include")
-        .static_flag(true)
-        .warnings(false)
-        .try_compile(&format!("futhark-lib-{compiler}", compiler = target))
-        .wrap_err("Failed to compile the generated c code.")?;
-
-    Ok(())
 }
 
 fn watch_source(source: &Path) -> Result<()> {
