@@ -251,6 +251,7 @@ fn impl_array_template(array: &ArrayType) -> TokenStream {
     let name_shape = array.fn_shape_ident();
     let name_values = array.fn_values_ident();
     let name_free = array.fn_free_ident();
+    let name_elem = array.elements_type.ident();
 
     let dims_new = (0..array.rank)
         .map(|i| format_ident!("dim_{}", i))
@@ -259,7 +260,7 @@ fn impl_array_template(array: &ArrayType) -> TokenStream {
     quote! {
         unsafe fn #name_new(
             ctx: *mut types::futhark_context,
-            data: *const f64,
+            data: *const #name_elem,
             #(#dims_new: i64),*
         ) -> *mut types::#name_type {
             sys::#name_new(ctx as *mut sys::futhark_context, data, #(#dims_new),*) as *mut types::#name_type
@@ -278,7 +279,7 @@ fn impl_array_template(array: &ArrayType) -> TokenStream {
         unsafe fn #name_values(
             ctx: *mut types::futhark_context,
             arr: *mut types::#name_type,
-            data: *mut f64,
+            data: *mut #name_elem,
         ) -> std::os::raw::c_int {
             sys::#name_values(
                 ctx as *mut sys::futhark_context,
