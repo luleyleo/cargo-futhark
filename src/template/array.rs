@@ -11,6 +11,7 @@ pub fn template(typ: &ArrayType) -> TokenStream {
     let fn_shape_name = typ.fn_shape_ident();
     let fn_values_name = typ.fn_values_ident();
     let fn_free_name = typ.fn_free_ident();
+    let elem_typ_name = typ.elements_type.ident();
 
     let summary_doc = format!(
         "Array of type `{}` and rank `{}`.",
@@ -38,7 +39,7 @@ pub fn template(typ: &ArrayType) -> TokenStream {
             ///
             ///  Multi-dimensional arrays are expect row-major form.
             #[allow(clippy::identity_op)]
-            pub fn new(context: &'c Context<B>, data: &[f64], #(#dim_params: usize),*) -> Self {
+            pub fn new(context: &'c Context<B>, data: &[#elem_typ_name], #(#dim_params: usize),*) -> Self {
                 assert_eq!(#(#dim_params *)* 1, data.len());
 
                 let inner = unsafe {
@@ -71,7 +72,7 @@ pub fn template(typ: &ArrayType) -> TokenStream {
             /// # Important
             /// Before calling this, you most likely want to call [`Context::sync`] first.
             /// See the documentation of [`Context::sync`] for more details.
-            pub fn values(&self, out: &mut Vec<f64>) {
+            pub fn values(&self, out: &mut Vec<#elem_typ_name>) {
                 let s = self.shape();
                 let len = s.iter().product::<usize>();
 
