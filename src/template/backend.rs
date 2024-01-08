@@ -2,7 +2,7 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
 use crate::{
-    manifest::{ArrayType, EntryPoint, Manifest, Type},
+    manifest::{Argument, ArrayType, EntryPoint, Manifest, Type},
     Target,
 };
 
@@ -80,10 +80,10 @@ fn trait_array_template(array: &ArrayType) -> TokenStream {
 fn trait_entry_point_template(ep: &EntryPoint) -> TokenStream {
     let entry_name = ep.futhark_fn_ident();
 
-    let inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
-        let input_name = format_ident!("in_{}", i);
+    let inputs = ep.inputs.iter().map(|Argument{type_, name}| {
+        let input_name = format_ident!("{}", name);
 
-        match typ {
+        match type_ {
             Type::Value(value) => {
                 let type_name = value.ident();
                 quote!(#input_name: #type_name)
@@ -176,10 +176,10 @@ pub fn impl_template(manifest: &Manifest, backend: Target) -> TokenStream {
 fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
     let entry_name = ep.futhark_fn_ident();
 
-    let rust_inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
-        let input_name = format_ident!("in_{}", i);
+    let rust_inputs = ep.inputs.iter().map(|Argument{type_, name}| {
+        let input_name = format_ident!("{}", name);
 
-        match typ {
+        match type_ {
             Type::Value(value) => {
                 let type_name = value.ident();
                 quote!(#input_name: #type_name)
@@ -206,10 +206,10 @@ fn impl_entry_point_template(ep: &EntryPoint) -> TokenStream {
         }
     });
 
-    let futhark_inputs = ep.inputs.iter().enumerate().map(|(i, typ)| {
-        let input_name = format_ident!("in_{}", i);
+    let futhark_inputs = ep.inputs.iter().map(|Argument{type_, name}| {
+        let input_name = format_ident!("{}", name);
 
-        match typ {
+        match type_ {
             Type::Value(_) => {
                 quote!(#input_name)
             }
