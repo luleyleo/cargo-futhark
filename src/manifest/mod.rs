@@ -32,3 +32,8 @@ pub enum Type {
     Value(ValueType),
     Array(ArrayType),
 }
+#[derive(Debug, Clone)]
+pub struct Argument {
+    pub name: String,
+    pub type_: Type,
+}

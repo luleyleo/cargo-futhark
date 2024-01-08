@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use eyre::{bail, Context};
 use serde_json::{Map, Value};
 
-use crate::manifest::{ArrayType, EntryPoint, Manifest, Type, ValueType};
+use crate::manifest::{Argument, ArrayType, EntryPoint, Manifest, Type, ValueType};
 
 pub fn load(manifest_file_content: &str) -> eyre::Result<Manifest> {
     let json: serde_json::Value =
@@ -61,8 +61,13 @@ fn load_entry_point(
         .as_array()
         .unwrap()
         .iter()
-        .map(|input| input["type"].as_str().unwrap())
-        .map(|input_type| types[input_type])
+        .enumerate()
+        .map(|(i, input)| Argument {
+            name: input.get("name")
+                .map(|n| dbg!(dbg!(n).as_str().unwrap().into()))
+                .unwrap_or(format!("in_{}", i)),
+            type_: types[input["type"].as_str().unwrap()],
+        })
         .collect::<Vec<_>>();
 
     let outputs = obj["outputs"]

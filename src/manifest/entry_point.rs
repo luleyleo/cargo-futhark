@@ -1,12 +1,12 @@
 use proc_macro2::Ident;
 use quote::format_ident;
 
-use crate::manifest::Type;
+use crate::manifest::{Argument, Type};
 
 #[derive(Debug, Clone)]
 pub struct EntryPoint {
     pub name: String,
-    pub inputs: Vec<Type>,
+    pub inputs: Vec<Argument>,
     pub outputs: Vec<Type>,
 }
 
