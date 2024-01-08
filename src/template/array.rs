@@ -88,8 +88,10 @@ pub fn template(typ: &ArrayType) -> TokenStream {
 
         impl<B: Backend> Drop for #struct_name <'_, B> {
             fn drop(&mut self) {
-                unsafe {
-                    B::#fn_free_name(self.context.inner, self.inner);
+                if !self.inner.is_null() {
+                    unsafe {
+                        B::#fn_free_name(self.context.inner, self.inner);
+                    }
                 }
             }
         }
