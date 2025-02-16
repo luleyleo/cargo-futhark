@@ -50,7 +50,10 @@ fn new_project(name: &str) -> Result<()> {
         .extract(project)
         .wrap_err("Failed to extract template.")?;
 
+    let cargo_toml_in_path = project.join("Cargo.toml.in");
     let cargo_toml_path = project.join("Cargo.toml");
+    fs::rename(&cargo_toml_in_path, &cargo_toml_path)
+        .wrap_err("Failed to rename Cargo.toml file.")?;
     let replacements = replace_in_file(cargo_toml_path, "{{lib-name}}", name)
         .wrap_err("Failed to replace project name in Cargo.toml file.")?;
     ensure!(
