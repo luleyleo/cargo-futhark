@@ -12,4 +12,4 @@ cuda = []
 ispc = []
 
 [build-dependencies]
-cargo-futhark = "0.1"
+cargo-futhark = "0.2"
