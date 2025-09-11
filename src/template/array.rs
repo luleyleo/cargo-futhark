@@ -77,7 +77,7 @@ pub fn template(typ: &ArrayType) -> TokenStream {
                 let len = s.iter().product::<usize>();
 
                 // Reserve more memory only if needed
-                if (out.capacity() < len) {
+                if out.capacity() < len {
                     out.reserve(len - out.capacity());
                 }
                 
