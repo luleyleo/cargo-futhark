@@ -76,7 +76,11 @@ pub fn template(typ: &ArrayType) -> TokenStream {
                 let s = self.shape();
                 let len = s.iter().product::<usize>();
 
-                out.reserve(len - out.capacity());
+                // Reserve more memory only if needed
+                if out.capacity() < len {
+                    out.reserve(len - out.capacity());
+                }
+                
                 unsafe {
                     B::#fn_values_name(self.context.inner, self.inner, out.as_mut_ptr());
                     out.set_len(len);
