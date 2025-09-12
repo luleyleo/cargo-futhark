@@ -1,5 +1,5 @@
 use crate::{manifest::Manifest, template, Target};
-use bindgen::callbacks::ParseCallbacks;
+use bindgen::callbacks::{ItemInfo, ParseCallbacks};
 use enumflags2::BitFlags;
 use eyre::{bail, ensure, Context, Result};
 use rerun_except::rerun_except;
@@ -277,7 +277,7 @@ impl Generator {
             .allowlist_function("free")
             .allowlist_function("futhark_.*")
             .allowlist_type("futhark_.*")
-            .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+            .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
             .parse_callbacks(PrefixRemover::new(prefix))
             .generate()
             .wrap_err("Failed to generate bindings.")?
@@ -345,9 +345,9 @@ impl PrefixRemover {
 }
 
 impl ParseCallbacks for PrefixRemover {
-    fn item_name(&self, original_item_name: &str) -> Option<String> {
-        if original_item_name.contains(&self.prefix) {
-            return Some(original_item_name.replace(&self.prefix, "futhark_"));
+    fn item_name(&self, item_info: ItemInfo<'_>) -> Option<String> {
+        if item_info.name.contains(&self.prefix) {
+            return Some(item_info.name.replace(&self.prefix, "futhark_"));
         }
 
         None

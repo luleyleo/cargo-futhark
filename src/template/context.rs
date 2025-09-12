@@ -100,7 +100,7 @@ fn entry_fn_template(ep: &EntryPoint) -> TokenStream {
         Type::Array(array) => {
             let typ = array.struct_ident();
 
-            quote!(#typ<B>)
+            quote!(#typ<'_, B>)
         }
     });
 

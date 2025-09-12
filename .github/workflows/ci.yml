@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  RUST_VERSION: 1.71.0
+  RUST_VERSION: 1.89.0
   FUTHARK_VERSION: 0.25.2
   FUTHARK_TARGETS: c,multicore
   CARGO_TERM_COLOR: always
@@ -124,3 +124,4 @@ jobs:
         with:
           command: test
           args: --workspace --features ${{ env.FUTHARK_TARGETS }} --doc --verbose
+
