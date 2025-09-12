@@ -17,8 +17,8 @@ fn sys_template(target: Target) -> TokenStream {
             improper_ctypes,
             deref_nullptr,
             dead_code,
-            clippy::approx_constant,
-            clippy::upper_case_acronyms
+            unnecessary_transmutes,
+            clippy::all,
         )]
 
         include!(concat!(env!("OUT_DIR"), "/futhark/", #target, "/futhark_lib.rs"));
